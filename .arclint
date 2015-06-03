@@ -1,0 +1,10 @@
+{
+  "linters": {
+    "eslint-regex-based": {
+      "type": "script-and-regex",
+      "script-and-regex.script": "sh -c 'eslint -f compact \"$0\" || true'",
+      "script-and-regex.regex": "/^(?P<file>.*): line (?P<line>[0-9]*), col (?P<char>[0-9]*), (?P<warning>Warning|Error) - (?P<message>.*)$/m",
+      "include": "(\\.js$)"
+    }
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "extends": "airbnb-base",
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "script", // airbnb sets its to "module"
+  },
+  "env": {
+    "mocha": true,
+    "es6": true,
+    "node": true,
+    "browser": false
+  },
+  "globals": {
+    "$app": false,
+    "$file": false,
+    "$os": false,
+    "$hb": false,
+    "$util": false,
+    "$net": false,
+    "$crypt": false,
+    "$modules": false
+  },
+  "rules": {
+    "comma-dangle": [2, "only-multiline"],
+    "quotes": [
+      2, "single", {"avoidEscape": true, "allowTemplateLiterals": true}    // http://eslint.org/docs/rules/quotes
+    ],
+    "no-unneeded-ternary": 0, // Sometimes, forbidding "unneeded" ternary makes the code less readable
+    "func-names": 0,
+    "no-confusing-arrow": [2, {"allowParens": true}],
+    "prefer-rest-params": 0,
+    "prefer-arrow-callback": 0,
+    "arrow-body-style": 0,
+    "global-require": 0,
+    "space-before-function-paren": [2, "never"],
+    "newline-per-chained-call": 0,
+    "object-curly-spacing": [2, "never"],
+    "object-shorthand": 0,
+    "no-param-reassign": 0,
+    "no-return-assign": 0,
+    "no-else-return": 0,
+    "consistent-return": 0,
+    "no-underscore-dangle": 0,
+    "quote-props": 0,
+    "no-console": 0,
+    "max-len": [2, {"code": 120}],
+    "strict": 2
+  }
+}

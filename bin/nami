@@ -1,0 +1,29 @@
+#!/bin/bash
+
+NODE_OPTS="--max_semi_space_size=150 --harmony_modules --harmony_proxies"
+
+SCRIPT=$0
+if [[ -h $SCRIPT ]]; then
+    SCRIPT=`readlink $SCRIPT`
+fi
+
+ROOTDIR=`cd $(dirname $SCRIPT)/.. && pwd`
+
+if [ -d "$ROOTDIR/nami_modules" ]; then
+    export NODE_PATH="$ROOTDIR/nami_modules"
+else
+    unset NODE_PATH
+fi
+
+NODE_RUNTIME=$ROOTDIR/runtime/node
+if [ "$NAMI_TEST_RUNTIME" != "" ]; then
+    if [ ! -f "$NODE_RUNTIME" ]; then
+        NODE_RUNTIME=$NAMI_TEST_RUNTIME
+    else
+        echo "Refusing to use NAMI_TEST_RUNTIME: File $NODE_RUNTIME exists" >&2
+        exit 1
+    fi
+
+fi
+
+exec "$NODE_RUNTIME" $NODE_OPTS $ROOTDIR/index.js "$@"
