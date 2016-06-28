@@ -1,3 +1,5 @@
+[![Build Status](https://api.travis-ci.org/bitnami/nami.svg?branch=master)](http://travis-ci.org/bitnami/nami)
+
 # nami
 
 _Nami_ is a synchronous node-based command line tool designed to ease the deployment of runtime, servers and web applications in multiple environments.
