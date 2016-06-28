@@ -4,7 +4,7 @@
 
 # nami
 
-_Nami_ is a synchronous node-based command line tool designed to ease the deployment of runtime, servers and web applications in multiple environments.
+_Nami_ is a synchronous node-based command line tool designed to ease the deployment of runtimes, servers and web applications in multiple environments.
 
 - _Application specific_: automate the configuration process with a simple API.
 - _Customize your stack_: deploy your app using any runtime version, do not depend on Linux distro package versions.
