@@ -1,7 +1,3 @@
----
-title: "Nami"
----
-
 # Introduction
 
 Nami is a synchronous node-based command line tool designed to ease the installation and ongoing management of packages.
