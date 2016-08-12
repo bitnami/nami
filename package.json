@@ -15,13 +15,13 @@
     "nami": "./bin/nami"
   },
   "scripts": {
-    "install-runtime": "./node_modules/.bin/gulp install-node",
-    "bundle": "./node_modules/.bin/gulp bundle",
-    "lint": "./node_modules/.bin/gulp lint",
-    "test": "./node_modules/.bin/gulp test",
-    "ci-test": "./node_modules/.bin/gulp ci-test",
-    "ci-lint": "./node_modules/.bin/gulp ci-lint",
-    "eslint-report": "./node_modules/.bin/eslint *.js lib -f node_modules/eslint-html-reporter/reporter.js -o qa/eslint-report.html"
+    "install-runtime": "gulp install-node",
+    "bundle": "gulp bundle",
+    "lint": "gulp lint",
+    "test": "gulp test",
+    "ci-test": "gulp ci-test",
+    "ci-lint": "gulp ci-lint",
+    "eslint-report": "eslint *.js lib -f node_modules/eslint-html-reporter/reporter.js -o qa/eslint-report.html"
   },
   "dependencies": {
     "cmd-parser": "^0.0.1",
