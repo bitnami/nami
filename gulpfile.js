@@ -18,7 +18,7 @@ commonTasks.ci(testArgs);
 
 /* Build tasks */
 
-const buildDir = './build';
+const buildDir = './artifacts/build';
 
 const runtime = {url: process.env.NODE_RUNTIME_URL || null};
 
