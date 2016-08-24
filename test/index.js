@@ -368,6 +368,11 @@ console.log(list.demo_package.version);
       expect(expectedInstalldir).to.be.a.directory();
       expect(path.join(expectedInstalldir, 'steps.txt')).to.be.a.file();
     });
+    it('Returns 1 if postInstallation fails', function() {
+      const pkgDir = copySamplePackage('erroneus-postInstallation');
+      const result = h.harpoonExec(`install ${pkgDir}`, {abortOnError: false});
+      expect(result.status).to.be.eql(1);
+    });
     describe('Installs a sample package with options', function() {
       let pkgDir = null;
       let expectedInstalldir = null;
