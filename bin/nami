@@ -1,6 +1,6 @@
 #!/bin/bash
 
-NODE_OPTS="--max_semi_space_size=150 --harmony_modules"
+NODE_OPTS="--max_semi_space_size=150"
 
 SCRIPT=$0
 if [[ -h $SCRIPT ]]; then
