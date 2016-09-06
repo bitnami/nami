@@ -18,9 +18,11 @@
     "install-runtime": "gulp install-node",
     "bundle": "gulp bundle",
     "lint": "gulp lint",
+    "cpd": "gulp cpd",
     "test": "gulp test",
-    "ci-test": "gulp ci-test",
     "ci-lint": "gulp ci-lint",
+    "ci-cpd": "gulp ci-cpd",
+    "ci-test": "gulp ci-test",
     "eslint-report": "eslint *.js lib -f node_modules/eslint-html-reporter/reporter.js -o qa/eslint-report.html"
   },
   "dependencies": {
@@ -39,7 +41,7 @@
     "eslint": "^2.13.1",
     "eslint-config-airbnb-base": "^3.0.1",
     "gulp": "^3.9.1",
-    "bitnami-gulp-common-tasks": "bitnami/gulp-common-tasks#v1.0.3",
+    "bitnami-gulp-common-tasks": "bitnami/gulp-common-tasks#v2.0.1",
     "run-sequence": "^1.2.1",
     "tmp": "^0.0.28",
     "xregexp": "^3.1.1"
