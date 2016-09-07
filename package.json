@@ -3,7 +3,8 @@
   "version": "0.0.3",
   "description": "Nami: a synchronous node-based command line tool designed to ease the deployment of runtimes, servers and web applications in multiple environments",
   "repository": {
-    "type" : "git", "url" : "https://github.com/bitnami/nami.git"
+    "type": "git",
+    "url": "https://github.com/bitnami/nami.git"
   },
   "keywords": [
     "nami"
@@ -34,14 +35,15 @@
     "strftime": "^0.9.2"
   },
   "devDependencies": {
-    "nami-test": "^0.0.1",
+    "bitnami-gulp-common-tasks": "bitnami/gulp-common-tasks#v2.0.2",
     "chai": "^3.5.0",
     "chai-fs": "git+https://github.com/bitnami/chai-fs.git",
     "chai-subset": "^1.2.2",
     "eslint": "^2.13.1",
     "eslint-config-airbnb-base": "^3.0.1",
+    "eslint-plugin-import": "^1.14.0",
     "gulp": "^3.9.1",
-    "bitnami-gulp-common-tasks": "bitnami/gulp-common-tasks#v2.0.1",
+    "nami-test": "^0.0.1",
     "run-sequence": "^1.2.1",
     "tmp": "^0.0.28",
     "xregexp": "^3.1.1"
