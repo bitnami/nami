@@ -370,7 +370,7 @@ console.log(list.demo_package.version);
     });
     it('Returns 1 if postInstallation fails', function() {
       const pkgDir = copySamplePackage('erroneus-postInstallation');
-      const result = h.harpoonExec(`install ${pkgDir}`, {abortOnError: false});
+      const result = h.namiExec(`install ${pkgDir}`, {abortOnError: false});
       expect(result.status).to.be.eql(1);
     });
     describe('Installs a sample package with options', function() {
