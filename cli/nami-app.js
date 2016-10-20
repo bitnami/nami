@@ -48,6 +48,8 @@ class NamiCliApp {
       onlyFlags: true
     });
 
+    console.log();
+
     const managerConfiguration = _.merge({
       logger: this.logger,
       encryptionPassword: this.parser.getOptionValue('encryption-password'),
@@ -597,6 +599,7 @@ class NamiCliApp {
         if (e.showHelp) {
           this.parser.showHelp({throw: false});
         }
+        this.exitCode = 1;
       }
       this.error(e.message);
       this.trace(e.stack);
