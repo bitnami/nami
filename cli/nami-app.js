@@ -19,7 +19,7 @@ class NamiCliApp {
   constructor(options) {
     options = _.defaults(options || {}, {logger: null});
 
-    this.exitCode = 0;
+    this._exitCode = 0;
     this.version = pkgData.version;
     this.revision = '0';
     this.builtOn = '';
@@ -79,6 +79,14 @@ class NamiCliApp {
     });
 
     this._populateCommands();
+  }
+
+  get exitCode() {
+    return this._exitCode || this.manager.exitCode;
+  }
+
+  set exitCode(value) {
+    this._exitCode = value;
   }
 
   get versionString() {
@@ -589,10 +597,10 @@ class NamiCliApp {
         if (e.showHelp) {
           this.parser.showHelp({throw: false});
         }
+        this.exitCode = 1;
       }
       this.error(e.message);
       this.trace(e.stack);
-      this.exitCode = this.exitCode || this.manager.exitCode !== 0 ? this.manager.exitCode : 1;
       return this.exitCode;
     }
     const cmd = this.parser.selectedCommand;
