@@ -4,7 +4,7 @@ const gulp = require('gulp');
 const commonTasks = require('bitnami-gulp-common-tasks')(gulp);
 const runSequence = require('run-sequence');
 
-const runtimeVersion = '6.2.1';
+const runtimeVersion = '6.5.0';
 const runtimeDir = './runtime';
 
 /* CI tasks */
@@ -18,7 +18,7 @@ commonTasks.ci(testArgs);
 
 /* Build tasks */
 
-const buildDir = './build';
+const buildDir = './artifacts/build';
 
 const runtime = {url: process.env.NODE_RUNTIME_URL || null};
 
