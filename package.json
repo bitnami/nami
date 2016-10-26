@@ -1,6 +1,6 @@
 {
   "name": "nami-tool",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Nami: a synchronous node-based command line tool designed to ease the deployment of runtimes, servers and web applications in multiple environments",
   "repository": {
     "type": "git",
@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "cmd-parser": "^0.0.2",
-    "nami-core": "^0.1.0",
+    "nami-core": "^0.1.2",
     "nami-logger": "^0.0.1",
     "nami-utils": "^0.1.0",
     "lodash": "^3.10.1",
