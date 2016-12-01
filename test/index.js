@@ -35,11 +35,17 @@ class NamiHandler {
         }
       }
     );
-    this._namiBin = path.join(__dirname, '../bin/nami');
+    if (process.env.NAMI_TOOL_BINARY) {
+      this._extraEnv = {};
+      this._namiBin = process.env.NAMI_TOOL_BINARY;
+    } else {
+      this._extraEnv = {NAMI_TEST_RUNTIME: process.argv[0]};
+      this._namiBin = path.join(__dirname, '../bin/nami');
+    }
   }
   _spawnOpts() {
     const env = {};
-    _.extend(env, process.env, {NAMI_TEST_RUNTIME: process.argv[0]});
+    _.extend(env, process.env, this._extraEnv);
     return {env: env};
   }
   namiExec(argsString, options) {
