@@ -182,6 +182,16 @@ return 'Hello ' + (who || 'you');
       const stdout = h.namiExec('execute main_package hello bitnami').stdout.trim();
       expect(JSON.parse(stdout)).to.be.eql('Hello bitnami');
     });
+    it('Uninitialized components do not allow executing commands', function() {
+      const mainPkgDir = samplePackageFromScratch(samplePackageData);
+      h.namiExec(`unpack ${mainPkgDir}`);
+      const result = h.namiExec('execute main_package hello bitnami', {abortOnError: false});
+
+      expect(result.status).to.be.eql(5);
+      expect(result.stdout).to.match(
+          /not fully installed. You cannot execute commands/
+      );
+    });
     it('Do not require required parameters to be able to call functions', function() {
       const packageData = _.cloneDeep(samplePackageData);
       _.extend(packageData, {
@@ -265,89 +275,129 @@ console.log(list.demo_package.version);
     });
   });
   describe('Services management', function() {
-    let h = null;
-    let sb = null;
-    let expectedInstalldir = null;
-    const samplePkgId = 'sample-service';
-    const id = 'dummy_service';
-    function getPid() {
-      try {
-        return parseInt(fs.readFileSync(path.join(expectedInstalldir, 'tmp/service.pid')).toString().trim(), 10);
-      } catch (e) {
-        return null;
+    class ServiceTestHelper {
+      constructor(opts) {
+        opts = _.defaults(opts || {}, {id: 'dummy_service'});
+        this._sandbox = new Sandbox();
+        this._namiHandler = getNewNamiHandler(this._sandbox);
+        this.id = opts.id;
+        this.installdir = null;
+      }
+      _copyPackage() {
+        const pkgDir = copySamplePackage('sample-service');
+        const prefix = this._sandbox.normalize('/opt/bitnami');
+        this.installdir = path.join(prefix, this.id);
+        return pkgDir;
+      }
+      install() {
+        const pkgDir = this._copyPackage();
+        this._namiHandler.namiExec(`install ${pkgDir}`);
+      }
+      unpack() {
+        const pkgDir = this._copyPackage();
+        this._namiHandler.namiExec(`unpack ${pkgDir}`);
+      }
+      getPid() {
+        try {
+          return parseInt(fs.readFileSync(path.join(this.installdir, 'tmp/service.pid')).toString().trim(), 10);
+        } catch (e) {
+          return null;
+        }
+      }
+      isRunning() {
+        const pid = this.getPid();
+        if (!pid) return false;
+        try {
+          return process.kill(pid, 0);
+        } catch (e) {
+          return false;
+        }
+      }
+      _callCommand(cmd) {
+        return execSync(
+          `${this.installdir}/ctlscript.sh ${cmd} > /dev/null 2> /dev/null`,
+          {detached: true}
+        ).toString().trim();
+      }
+      start() {
+        return this._callCommand('start');
+      }
+      stop() {
+        return this._callCommand('stop');
+      }
+      namiExec(cmd, opts) {
+        return this._namiHandler.namiExec(cmd, opts);
+      }
+      cleanUp() {
+        this.stop();
+        // Make sure it is stopped
+        try {
+          process.kill(this.getPid());
+        } catch (e) { /* not empty */ }
+        _.each(['tmp/service.pid', 'logs/service.log'], f => {
+          fs.removeSync(path.join(this.installdir, f));
+        });
       }
     }
-    function isRunning() {
-      const pid = getPid();
-      if (!pid) return false;
-      try {
-        return process.kill(pid, 0);
-      } catch (e) {
-        return false;
-      }
-    }
-    function _callCommand(cmd) {
-      return execSync(
-        `${expectedInstalldir}/ctlscript.sh ${cmd} > /dev/null 2> /dev/null`,
-        {detached: true}
-      ).toString().trim();
-    }
-    function start() {
-      return _callCommand('start');
-    }
-    function stop() {
-      return _callCommand('stop');
-    }
-    function cleanUp() {
-      stop();
-      // Make sure it is stopped
-      try {
-        process.kill(getPid());
-      } catch (e) { /* not empty */ }
-      _.each(['tmp/service.pid', 'logs/service.log'], function(f) {
-        fs.removeSync(path.join(expectedInstalldir, f));
+    describe('Start', function() {
+      let helper = null;
+      beforeEach(function() {
+        helper = new ServiceTestHelper();
+        helper.install();
       });
-    }
+      afterEach(() => helper.cleanUp());
 
-    before(function() {
-      sb = new Sandbox();
-      h = getNewNamiHandler(sb);
-      const pkgDir = copySamplePackage(samplePkgId);
-      const prefix = sb.normalize('/opt/bitnami');
-      expectedInstalldir = path.join(prefix, id);
-      h.namiExec(`install ${pkgDir}`);
+      it('Starts a service', function() {
+        expect(helper.isRunning()).to.be.eql(false);
+        helper.namiExec(`start ${helper.id}`);
+        expect(helper.isRunning()).to.be.eql(true);
+      });
     });
+    describe('Stop', function() {
+      let helper = null;
+      beforeEach(function() {
+        helper = new ServiceTestHelper();
+        helper.install();
+      });
+      afterEach(() => helper.cleanUp());
 
-    beforeEach(function() {
-      cleanUp();
+      it('Stops a service', function() {
+        helper.start();
+        expect(helper.isRunning()).to.be.eql(true);
+        helper.namiExec(`stop ${helper.id}`);
+        expect(helper.isRunning()).to.be.eql(false);
+      });
     });
+    describe('Status', function() {
+      it('Gets service status', function() {
+        const helper = new ServiceTestHelper();
+        helper.install();
 
-    afterEach(function() {
-      cleanUp();
-    });
-    it('Starts a service', function() {
-      expect(isRunning()).to.be.eql(false);
-      h.namiExec(`start ${id}`);
-      expect(isRunning()).to.be.eql(true);
-    });
-    it('Stops a service', function() {
-      start();
-      expect(isRunning()).to.be.eql(true);
-      h.namiExec(`stop ${id}`);
-      expect(isRunning()).to.be.eql(false);
-    });
-    it('Gets service status', function() {
-      expect(isRunning()).to.be.eql(false);
-      let result = h.namiExec(`status ${id}`, {abortOnError: false});
-      expect(result.status).to.be.eql(1);
-      expect(result.stdout).to.match(/not running/);
+        expect(helper.isRunning()).to.be.eql(false);
+        let result = helper.namiExec(`status ${helper.id}`, {abortOnError: false});
+        expect(result.status).to.be.eql(1);
+        expect(result.stdout).to.match(/not running/);
 
-      start();
+        helper.start();
 
-      expect(isRunning()).to.be.eql(true);
-      result = h.namiExec(`status ${id}`, {abortOnError: false});
-      expect(result.status).to.be.eql(0);
-      expect(result.stdout).to.match(/is running/);
+        expect(helper.isRunning()).to.be.eql(true);
+        result = helper.namiExec(`status ${helper.id}`, {abortOnError: false});
+        expect(result.status).to.be.eql(0);
+        expect(result.stdout).to.match(/is running/);
+
+        helper.cleanUp();
+      });
+      it('A non-initialized service status returns non-zero exit code', function() {
+        const helper = new ServiceTestHelper();
+        helper.unpack();
+
+        const result = helper.namiExec(`status ${helper.id}`, {abortOnError: false});
+        expect(result.status).to.be.eql(5);
+        expect(result.stderr).to.match(
+            /not fully installed. You cannot execute commands/
+        );
+        helper.cleanUp();
+      });
     });
   });
   describe('Install packages', function() {

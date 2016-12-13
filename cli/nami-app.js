@@ -146,7 +146,6 @@ class NamiCliApp {
     callOpts.push(cmdOpts);
     return (obj.exports[cmd.name]).apply(obj, callOpts);
   }
-
   _processSelectedServiceCmd(obj, cmdName, cmdOpts, appOpts) {
     const cmd = obj.parser.getCommand(cmdName);
     cmd.parseData(cmdOpts);
@@ -175,6 +174,16 @@ class NamiCliApp {
         }
       });
     });
+  }
+  _ensureComponentIsInitialized(obj) {
+    if (obj.lifecycle !== 'installed') {
+      // We set the exit code to "5 program is not installed",
+      // as per LSB recommenddation:
+      // http://refspecs.linuxbase.org/LSB_3.1.0/LSB-Core-generic/LSB-Core-generic/iniscrptact.html
+      // This is defined for services but we are adopting it for all non-initialized errors
+      this.exitCode = 5;
+      throw new Error(`${obj.id} is not fully installed. You cannot execute commands`);
+    }
   }
   _reportServiceCmdResult(result) {
     console.log(result.msg || result.statusOutput);
@@ -228,9 +237,7 @@ class NamiCliApp {
 
   execute(pkgName, options) {
     const obj = _.first(this.manager.search(pkgName));
-    if (obj.lifecycle !== 'installed') {
-      throw new Error(`${obj.id} is not fully installed. You cannot execute commands`);
-    }
+    this._ensureComponentIsInitialized(obj);
     obj.parser.parse(options.args || [], {
       abortOnUnknown: false, abortIfRequiredAndNotProvided: false
     });
@@ -301,7 +308,12 @@ class NamiCliApp {
       );
     });
   }
-
+  _setFailedExitCode() {
+    // this ensures that we do not override manually set exitCode
+    if (this.exitCode === 0) {
+      this.exitCode = 1;
+    }
+  }
   exposeManagerCmd(cmdOpts, optionsOpts) {
     const that = this;
     cmdOpts = _.defaults(cmdOpts || {}, {outputHandler: _.noop, minArgs: 1, maxArgs: 1, namedArgs: ['package']});
@@ -324,7 +336,7 @@ class NamiCliApp {
       } catch (e) {
         console.error(e.message);
         that.trace(e.stack);
-        that.exitCode = 1;
+        that._setFailedExitCode();
       }
     };
     this.parser.addCommand(cmdOpts, optionsOpts || []);
@@ -398,7 +410,7 @@ class NamiCliApp {
         } catch (e) {
           console.log(e.message);
           that.trace(e.stack);
-          that.exitCode = 1;
+          that._setFailedExitCode();
         }
       }
     }, [
@@ -452,7 +464,7 @@ class NamiCliApp {
         } catch (e) {
           console.log(e.message);
           that.trace(e.stack);
-          that.exitCode = 1;
+          that._setFailedExitCode();
         }
       }
     });
@@ -518,7 +530,7 @@ class NamiCliApp {
         } catch (e) {
           console.log(e.message);
           that.trace(e.stack);
-          that.exitCode = 1;
+          that._setFailedExitCode();
         }
       }
     });
@@ -544,9 +556,7 @@ class NamiCliApp {
           if (!_.contains(hu.getInheritanceChain(obj), 'Service')) {
             throw new Error(`Service commands are only supported for services`);
           }
-          if (obj.lifecycle !== 'installed') {
-            throw new Error(`${obj.id} is not fully installed. You cannot execute commands`);
-          }
+          that._ensureComponentIsInitialized(obj);
           return cmd(obj, this.getFlattenOptions({camelize: true}), this.extraArgs);
         }
       });
@@ -572,7 +582,7 @@ class NamiCliApp {
         } catch (e) {
           console.log(e.message);
           that.trace(e.stack);
-          that.exitCode = 1;
+          that._setFailedExitCode();
         }
       }
     });
@@ -601,6 +611,7 @@ class NamiCliApp {
       }
       this.error(e.message);
       this.trace(e.stack);
+      this._setFailedExitCode();
       return this.exitCode;
     }
     const cmd = this.parser.selectedCommand;
