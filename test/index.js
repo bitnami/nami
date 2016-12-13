@@ -275,7 +275,6 @@ console.log(list.demo_package.version);
     });
   });
   describe('Services management', function() {
-    let helper = null;
     class ServiceTestHelper {
       constructor(opts) {
         opts = _.defaults(opts || {}, {id: 'dummy_service'});
@@ -392,7 +391,7 @@ console.log(list.demo_package.version);
         const helper = new ServiceTestHelper();
         helper.unpack();
 
-        let result = helper.namiExec(`status ${helper.id}`, {abortOnError: false});
+        const result = helper.namiExec(`status ${helper.id}`, {abortOnError: false});
         expect(result.status).to.be.eql(5);
         expect(result.stderr).to.match(
             /not fully installed. You cannot execute commands/

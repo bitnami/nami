@@ -611,7 +611,7 @@ class NamiCliApp {
       }
       this.error(e.message);
       this.trace(e.stack);
-      this._setFailedExitCode()
+      this._setFailedExitCode();
       return this.exitCode;
     }
     const cmd = this.parser.selectedCommand;
