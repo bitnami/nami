@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "cmd-parser": "^0.0.2",
-    "nami-core": "^0.2.0",
+    "nami-core": "^0.2.2",
     "nami-logger": "^0.0.1",
     "nami-utils": "^0.1.0",
     "lodash": "^3.10.1",
