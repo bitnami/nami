@@ -40,7 +40,7 @@
     "fs-extra": "^7.0.0",
     "chai-fs": "git+https://github.com/bitnami/chai-fs.git",
     "chai-subset": "^1.2.2",
-    "eslint": "^2.13.1",
+    "eslint": "^6.5.1",
     "eslint-config-airbnb-base": "^3.0.1",
     "eslint-plugin-import": "^1.14.0",
     "gulp": "^3.9.1",
