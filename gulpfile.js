@@ -2,9 +2,9 @@
 
 const gulp = require('gulp');
 const commonTasks = require('bitnami-gulp-common-tasks')(gulp);
-const runSequence = require('run-sequence');
+const runSequence = require('gulp4-run-sequence');
 
-const runtimeVersion = '6.9.4';
+const runtimeVersion = '8.17.0';
 const runtimeDir = './runtime';
 
 /* CI tasks */
@@ -82,4 +82,4 @@ gulp.task('clean', () => {
   runSequence('test:clean', 'ci-test:clean', 'bundle:clean');
 });
 
-gulp.task('default', ['install-runtime']);
+gulp.task('default', gulp.series('bundle'));
