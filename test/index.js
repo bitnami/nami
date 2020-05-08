@@ -110,7 +110,7 @@ describe('Nami App', function() {
         // XRegExp uses this naming and usage
         /* eslint-disable new-cap, no-useless-escape, prefer-template */
         const mainHelpRe = XRegExp(
-        '^\nUsage: nami \<options\> \<command\>\n*'
+          '^\nUsage: nami \<options\> \<command\>\n*'
           + '\\s+where \<options\> include:\n+'
           + '--help\\s+\n+'
           + getOptionReText('log-level', {default: 'info', allowed: 'trace, debug, info, warn, error, silent'})
@@ -189,7 +189,7 @@ return 'Hello ' + (who || 'you');
 
       expect(result.status).to.be.eql(5);
       expect(result.stdout).to.match(
-          /not fully installed. You cannot execute commands/
+        /not fully installed. You cannot execute commands/
       );
     });
     it('Do not require required parameters to be able to call functions', function() {
@@ -394,7 +394,7 @@ console.log(list.demo_package.version);
         const result = helper.namiExec(`status ${helper.id}`, {abortOnError: false});
         expect(result.status).to.be.eql(5);
         expect(result.stderr).to.match(
-            /not fully installed. You cannot execute commands/
+          /not fully installed. You cannot execute commands/
         );
         helper.cleanUp();
       });
