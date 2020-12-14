@@ -1,6 +1,6 @@
 {
   "name": "nami-tool",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Nami: a synchronous node-based command line tool designed to ease the deployment of runtimes, servers and web applications in multiple environments",
   "repository": {
     "type": "git",
@@ -27,11 +27,11 @@
     "eslint-report": "eslint *.js lib -f node_modules/eslint-html-reporter/reporter.js -o qa/eslint-report.html"
   },
   "dependencies": {
-    "cmd-parser": "^1.0.0",
-    "lodash": "^4.17.10",
-    "nami-core": "^2.0.0",
-    "nami-logger": "^1.0.0",
-    "nami-utils": "^2.0.0",
+    "cmd-parser": "bitnami/node-cmd-parser#v1.0.1",
+    "lodash": "^4.17.20",
+    "nami-core": "bitnami/nami-core#v2.0.1",
+    "nami-logger": "bitnami/nami-logger#v1.0.1",
+    "nami-utils": "bitnami/nami-utils#v2.0.1",
     "strftime": "^0.9.2"
   },
   "devDependencies": {
