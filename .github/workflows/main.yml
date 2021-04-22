@@ -1,0 +1,95 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+  release:
+    types: [published]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [8.x, 10.x]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install
+    - run: npm run lint
+    - run: npm test
+
+  build:
+    runs-on: ubuntu-latest
+    needs: [ test ]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node 10 to build
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm install
+    - run: npm run bundle
+    - run: |
+          export NAMI_TOOL_BINARY="$(pwd)/artifacts/build/bundle/bin/nami"
+          npm test
+    - uses: actions/upload-artifact@v2
+      with:
+        name: built-binaries
+        path: artifacts/build/nami-linux-x64.tar.gz
+
+  release:
+    needs: [ 'build' ]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/download-artifact@v2
+        with:
+          path: ./artifacts
+      - name: Set tag name
+        id: vars
+        run: echo ::set-output name=tag::${GITHUB_REF#refs/*/}
+      - name: Release
+        run: |
+          set -e
+          set -x
+          find ./artifacts
+          create_digest_file() {
+              local digest_file=${1:?You must provide the digest file path}
+              shift
+              for file in "$@"; do
+                (
+                   cd "$(dirname "$file")"
+                   sha256sum "$(basename "$file")"
+                ) >> "$digest_file"
+              done
+          }
+          assets=( ./artifacts/built-binaries/*.gz )
+          tag_name="${{ steps.vars.outputs.tag }}"
+          checksums_file="${tag_name}_checksums.txt"
+          create_digest_file "$checksums_file" "${assets[@]}"
+          assets+=( "$checksums_file" )
+          if gh release view "$tag_name" >/dev/null 2>/dev/null; then
+            echo "Release $tag_name already exists. Updating"
+            gh release upload "$tag_name" "${assets[@]}"
+          else
+            echo "Creating new release $tag_name"
+            # Format checksums for the release text
+            printf '```\n%s\n```' "$(<"$checksums_file")" > release.txt
+            gh release create -t "$tag_name" "$tag_name" -F release.txt "${assets[@]}"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
