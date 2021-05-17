@@ -1,4 +1,4 @@
-[![Build Status](https://api.travis-ci.org/bitnami/nami.svg?branch=master)](http://travis-ci.org/bitnami/nami)
+[![Build Status](https://github.com/bitnami/nami/actions/workflows/main.yml/badge.svg)](https://github.com/bitnami/nami/actions/workflows/main.yml)
 
 > **ALERT**: Please note this library is currently under active development. Any release versioned 0.x is subject to backwards incompatible changes.
 
